@@ -2,32 +2,45 @@
 
 var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
-var data = require('./sanjuan.json')
+
 //var L = require('leaflet')
 //require('leaflet.vectorgrid').VectorGrid
 require('./lib/Leaflet.VectorGrid.Leveldb')
 
+var data = {
+  shoreline: require('./sanjuan.json'),
+  roads: require('./roads.json')
+}
+
 var map = L.map('map', {
-  center: [48.532294,-123.083954],
+  center: [48.532294, -123.083954],
   zoom: 12,
   maxZoom: 15
 })
-var defaultBase = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibnBlaWhsIiwiYSI6InVmU21qeVUifQ.jwa9V6XsmccKsEHKh5QfmQ', {
+var base = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibnBlaWhsIiwiYSI6InVmU21qeVUifQ.jwa9V6XsmccKsEHKh5QfmQ', {
   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-  maxZoom: 18
+  maxZoom: 15
 })
-defaultBase.addTo(map)
+//base.addTo(map)
 
 var vectorTileOptions = {
   rendererFactory: L.canvas.tile,
   attribution: 'San Juan County GIS',
   vectorTileLayerStyles: {
-    data: {
-      weight: 1,
-      fillColor: '#9bc2c4',
-      fillOpacity: 0.6,
+    shoreline: {
       fill: true,
-      stroke: true
+      weight: 1,
+      fillColor: '#e1e1e1',
+      color: '#343434',
+      fillOpacity: 0.2,
+      opacity: 0.4
+    },
+    roads: {
+      weight: 1,
+      fillColor: '#676767',
+      color: '#676767',
+      fillOpacity: 0.2,
+      opacity: 0.4
     }
   }
 }
