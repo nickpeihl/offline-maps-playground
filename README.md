@@ -1,6 +1,6 @@
 # Offline map playground
 
-An experiment in storing and displaying custom vector tiles from IndexedDB (using Level-js).
+An experiment in storing and displaying custom vector tiles from IndexedDB (using [level-js](https://github.com/maxogden/level.js)).
 
 Work in progress
 
