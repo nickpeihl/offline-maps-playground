@@ -6,22 +6,10 @@ var level = require('level-js')
 //var L = require('leaflet')
 //require('leaflet.vectorgrid').VectorGrid
 require('./lib/Leaflet.VectorGrid.Leveldb')
+require('leaflet-easybutton')
 
-var data = {
-  shoreline: require('./sanjuan.json'),
-  roads: require('./roads.json')
-}
-
-var map = L.map('map', {
-  center: [48.532294, -123.083954],
-  zoom: 12,
-  maxZoom: 15
-})
-var base = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibnBlaWhsIiwiYSI6InVmU21qeVUifQ.jwa9V6XsmccKsEHKh5QfmQ', {
-  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-  maxZoom: 15
-})
-//base.addTo(map)
+var db = level('vt')
+var layer
 
 var vectorTileOptions = {
   rendererFactory: L.canvas.tile,
@@ -45,17 +33,46 @@ var vectorTileOptions = {
   }
 }
 
-var db = level('vt')
+var data = {
+  shoreline: require('./sanjuan.json'),
+  roads: require('./roads.json')
+}
+
+var map = L.map('map', {
+  center: [48.532294, -123.083954],
+  zoom: 12,
+  maxZoom: 15
+})
 
 db.open(function onOpen () {
-  var vti = VectorTileIndex(data, db, {
-    zMin: 10,
-    zMax: 15,
-    bbox: [-123.214417, 48.434668, -122.953491, 48.630186]
-  })
-  vti.ready(function () {
-    console.log('ready')
-    var layer = L.vectorGrid.leveldb(db, vectorTileOptions)
-    layer.addTo(map)
-  })
+  layer = L.vectorGrid.leveldb(db, vectorTileOptions)
+  layer.addTo(map)
 })
+
+L.easyButton({
+  states: [{
+    stateName: 'ready',
+    icon: '<span class="icon">&check;</span>',
+    title: 'Click to refresh the cache',
+    onClick: function (control) {
+      control.state('loading')
+      var vti = VectorTileIndex(data, db, {
+        zMin: 10,
+        zMax: 15,
+        bbox: [-123.214417, 48.434668, -122.953491, 48.630186]
+      })
+      vti.ready(function () {
+        console.log('ready')
+        control.state('ready')
+        layer.redraw()
+      })
+    }
+  }, {
+    stateName: 'loading',
+    icon: '<span class="icon">&curren;</span>',
+    title: 'Refreshing the cache...',
+    onClick: function (control) {
+      control.state('ready')
+    }
+  }]
+}).addTo(map)
