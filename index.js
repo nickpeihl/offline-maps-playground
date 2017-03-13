@@ -1,15 +1,17 @@
-/* global L */
+/* global L, Tangram */
 
 var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
 
-//var L = require('leaflet')
-//require('leaflet.vectorgrid').VectorGrid
+// var L = require('leaflet')
+// require('leaflet.vectorgrid').VectorGrid
 require('./lib/Leaflet.VectorGrid.Leveldb')
 require('leaflet-easybutton')
+require('./lib/tangram/sources/mvt-level')
 
 var db = level('vt')
-var layer
+var layer1
+var layer2
 
 var vectorTileOptions = {
   rendererFactory: L.canvas.tile,
@@ -33,6 +35,39 @@ var vectorTileOptions = {
   }
 }
 
+var sceneConfig = {
+  sources: {
+    sjcgis: {
+      type: 'MVTLevel',
+      db: db
+    }
+  },
+  layers: {
+    shoreline: {
+      data: {
+        source: 'sjcgis'
+      },
+      draw: {
+        polygons: {
+          color: '#e1e1e1',
+          order: 0
+        }
+      }
+    },
+    roads: {
+      data: {
+        source: 'sjcgis'
+      },
+      draw: {
+        lines: {
+          color: '#676767',
+          order: 1
+        }
+      }
+    }
+  }
+}
+
 var data = {
   shoreline: require('./sanjuan.json'),
   roads: require('./roads.json')
@@ -44,9 +79,13 @@ var map = L.map('map', {
   maxZoom: 15
 })
 
+var layerControl = L.control.layers().addTo(map)
+
 db.open(function onOpen () {
-  layer = L.vectorGrid.leveldb(db, vectorTileOptions)
-  layer.addTo(map)
+  layer1 = L.vectorGrid.leveldb(db, vectorTileOptions)
+  layer2 = Tangram.leafletLayer({ scene: sceneConfig, showDebug: true }).addTo(map)
+  layerControl.addBaseLayer(layer1, 'Leaflet VectorGrid')
+  layerControl.addBaseLayer(layer2, 'Tangram MVTLevel')
 })
 
 L.easyButton({
@@ -64,7 +103,7 @@ L.easyButton({
       vti.ready(function () {
         console.log('ready')
         control.state('ready')
-        layer.redraw()
+        layer1.redraw()
       })
     }
   }, {
