@@ -6,7 +6,7 @@ Work in progress
 
 ## Demo
 
-[http://npeihl.com/offline-map-playground](http://npeihl.com/offline-map-playground)
+[http://npeihl.com/offline-maps-playground](http://npeihl.com/offline-maps-playground)
 
 Click the checkmark button to save map layers into IndexedDB. When complete the layers should display on the map. The map layers persist even after reload and in an offline state.
 
