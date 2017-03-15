@@ -4,6 +4,8 @@ An experiment in storing and displaying custom vector tiles from IndexedDB (usin
 
 Work in progress
 
+![screenshot](screenshot.png)
+
 ## Demo
 
 [http://npeihl.com/offline-maps-playground](http://npeihl.com/offline-maps-playground)
