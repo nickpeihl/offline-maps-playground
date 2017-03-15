@@ -16,7 +16,7 @@ You can refresh the cache again later while online by clicking the checkmark but
 
 ## What's going on here?
 
-On the first load you are presented with a blank map canvas. When you click the checkmark button, the web application downloads four GeoJSON files from the [San Juan County Open Data website](https://data.sjcgis.org).
+On the first load you are presented with a blank map canvas. When you click the checkmark button, the web application downloads four GeoJSON files from the [San Juan County Open Data website](http://data.sjcgis.org). The map is of San Juan Island, WA (where I live).
 * Shoreline
 * Roads
 * Driveways
