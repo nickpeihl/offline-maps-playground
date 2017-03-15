@@ -1,7 +1,9 @@
-/* global L */
+/* global L, mapboxgl */
 
 var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
+var reqData = require('./lib/ags-opendata-request')
+var parallel = require('run-parallel')
 
 //var L = require('leaflet')
 //require('leaflet.vectorgrid').VectorGrid
@@ -33,12 +35,12 @@ var vectorTileOptions = {
   }
 }
 
-var data = {
-  shoreline: require('./sanjuan.json'),
-  roads: require('./roads.json')
+var sources = {
+  shoreline: 'http://data.sjcgis.org/datasets/1f8c6537e46d4c6aa6bd20ff466fb982_0.geojson?where=OBJECTID%20%3E%3D%20262',
+  roads: 'http://data.sjcgis.org/datasets/167317f36825482abeae53637ad7a7f4_3.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838177.03790262,"ymin":6156211.922408805,"xmax":-13544658.849287685,"ymax":6247936.356350972,"spatialReference":{"wkid":102100}}'
 }
 
-var map = L.map('map', {
+var leafletMap = L.map('leaflet-map', {
   center: [48.532294, -123.083954],
   zoom: 12,
   maxZoom: 15
@@ -46,7 +48,7 @@ var map = L.map('map', {
 
 db.open(function onOpen () {
   layer = L.vectorGrid.leveldb(db, vectorTileOptions)
-  layer.addTo(map)
+  layer.addTo(leafletMap)
 })
 
 L.easyButton({
@@ -56,15 +58,19 @@ L.easyButton({
     title: 'Click to refresh the cache',
     onClick: function (control) {
       control.state('loading')
-      var vti = VectorTileIndex(data, db, {
-        zMin: 10,
-        zMax: 15,
-        bbox: [-123.214417, 48.434668, -122.953491, 48.630186]
-      })
-      vti.ready(function () {
-        console.log('ready')
-        control.state('ready')
-        layer.redraw()
+      loadData(sources, function (err, data) {
+        if (err) throw err
+        // TODO this code smells
+        var layers = data.reduce(function (result, item) {
+          result[item['name']] = item['data']
+          return result
+        }, {})
+        var vti = bakeTiles(layers)
+        vti.ready(function () {
+          console.log('ready')
+          control.state('ready')
+          layer.redraw()
+        })
       })
     }
   }, {
@@ -75,4 +81,27 @@ L.easyButton({
       control.state('ready')
     }
   }]
-}).addTo(map)
+}).addTo(leafletMap)
+
+function loadData (sources, cb) {
+  var fns = Object.keys(sources).map(function (source) {
+    return function (cb) {
+      reqData({ url: sources[source] }, function (err, data) {
+        if (err) cb(err)
+        cb(null, {
+          name: source,
+          data: data
+        })
+      })
+    }
+  })
+  parallel(fns, cb)
+}
+
+function bakeTiles (data) {
+  return VectorTileIndex(data, db, {
+    zMin: 10,
+    zMax: 15,
+    bbox: [-123.214417, 48.434668, -122.953491, 48.630186]
+  })
+}
