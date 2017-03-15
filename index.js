@@ -19,7 +19,7 @@ var vectorTileOptions = {
   vectorTileLayerStyles: {
     shoreline: {
       fill: true,
-      weight: 1,
+      weight: 1.2,
       fillColor: '#e1e1e1',
       color: '#343434',
       fillOpacity: 0.2,
@@ -31,13 +31,30 @@ var vectorTileOptions = {
       color: '#676767',
       fillOpacity: 0.2,
       opacity: 0.4
+    },
+    driveways: {
+      weight: 0.4,
+      fillColor: '#676767',
+      color: '#676767',
+      fillOpacity: 0.2,
+      opacity: 0.4
+    },
+    addresses: {
+      weight: 1,
+      fillColor: '#636363',
+      color: '#636363',
+      fillOpacity: 0.2,
+      opacity: 0.4,
+      radius: 1
     }
   }
 }
 
 var sources = {
   shoreline: 'http://data.sjcgis.org/datasets/1f8c6537e46d4c6aa6bd20ff466fb982_0.geojson?where=OBJECTID%20%3E%3D%20262',
-  roads: 'http://data.sjcgis.org/datasets/167317f36825482abeae53637ad7a7f4_3.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838177.03790262,"ymin":6156211.922408805,"xmax":-13544658.849287685,"ymax":6247936.356350972,"spatialReference":{"wkid":102100}}'
+  roads: 'http://data.sjcgis.org/datasets/167317f36825482abeae53637ad7a7f4_3.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838177.03790262,"ymin":6156211.922408805,"xmax":-13544658.849287685,"ymax":6247936.356350972,"spatialReference":{"wkid":102100}}',
+  driveways: 'http://data.sjcgis.org/datasets/2348ee6eafd448a0844d7b7a9e080924_2.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838270.89849671,"ymin":6161485.503622763,"xmax":-13544752.709881775,"ymax":6253209.93756493,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
+  addresses: 'http://data.sjcgis.org/datasets/1669f3152e2c4f4c8dd4228e240a9b7e_0.geojson?where=ISLAND%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13837887.607226558,"ymin":6161510.400420933,"xmax":-13544369.418611623,"ymax":6253234.8343631,"spatialReference":{"wkid":102100}}'
 }
 
 var leafletMap = L.map('leaflet-map', {
