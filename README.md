@@ -4,6 +4,8 @@ An experiment in storing and displaying custom vector tiles from IndexedDB (usin
 
 Work in progress
 
+![screenshot](screenshot.png)
+
 ## Demo
 
 [http://npeihl.com/offline-maps-playground](http://npeihl.com/offline-maps-playground)
@@ -14,7 +16,7 @@ You can refresh the cache again later while online by clicking the checkmark but
 
 ## What's going on here?
 
-On the first load you are presented with a blank map canvas. When you click the checkmark button, the web application downloads four GeoJSON files from the [San Juan County Open Data website](https://data.sjcgis.org).
+On the first load you are presented with a blank map canvas. When you click the checkmark button, the web application downloads four GeoJSON files from the [San Juan County Open Data website](http://data.sjcgis.org). The map is of San Juan Island, WA (where I live).
 * Shoreline
 * Roads
 * Driveways
