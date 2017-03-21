@@ -4,6 +4,8 @@ var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
 var reqData = require('./lib/ags-opendata-request')
 var parallel = require('run-parallel')
+var VectorTileWorkerSource = require('mapbox-gl/src/source/vector_tile_worker_source')
+var loadVectorData = require('./lib/load-vector-data-leveldb')
 
 //var L = require('leaflet')
 //require('leaflet.vectorgrid').VectorGrid
@@ -11,6 +13,7 @@ require('./lib/Leaflet.VectorGrid.Leveldb')
 require('leaflet-easybutton')
 
 var db = level('vt')
+mapboxgl.accessToken = 'pk.eyJ1IjoibnBlaWhsIiwiYSI6InVmU21qeVUifQ.jwa9V6XsmccKsEHKh5QfmQ'
 var layer
 
 var vectorTileOptions = {
@@ -60,6 +63,14 @@ var sources = {
 var leafletMap = L.map('leaflet-map', {
   center: [48.532294, -123.083954],
   zoom: 12,
+  maxZoom: 15
+})
+
+var mapboxMap = new mapboxgl.Map({
+  container: 'mapbox-map',
+  style: 'mapbox://styles/mapbox/streets-v9',
+  center: [-123.083954, 48.532294],
+  zoom: 11,
   maxZoom: 15
 })
 
