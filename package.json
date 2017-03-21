@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/vti.js",
+    "test": "tape test/*.js",
     "start": "budo index.js:bundle.js"
   },
   "author": "Nick Peihl <nickpeihl@gmail.com> (http://npeihl.com/)",

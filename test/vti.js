@@ -16,10 +16,10 @@ vti.ready(function () {
     db.get('3,1,2', function (err, data) {
       t.ifError(err)
       t.ok(data.length > 0)
-    }),
+    })
     db.get('0,0,0', function (err, data) {
       t.ok(err.notFound)
-    }),
+    })
     db.get('3,1,4', function (err, data) {
       t.ok(err.notFound)
     })
