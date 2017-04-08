@@ -1,24 +1,24 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
+        <meta charset="utf8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-        <link href='https://api.mapbox.com/mapbox-gl-js/v0.33.1/mapbox-gl.css' rel='stylesheet' />
         <style>
-         .map {
-             width: 600px;
-             height: 400px;
-             margin: auto;
-             margin-top: 1em;
+         html, body, .map {
+             width: 100vw;
+             height: 100vh;
+         }
+         body {
+             padding: 0;
+             margin: 0;
          }
         </style>
     </head>
     <body>
         <div id='leaflet-map' class='map'></div>
-        <div id='mapbox-map' class='map'></div>
         <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
         <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js"></script>
-        <script src='https://api.mapbox.com/mapbox-gl-js/v0.33.1/mapbox-gl.js'></script>
         <script src="bundle.js"></script>
     </body>
 </html>

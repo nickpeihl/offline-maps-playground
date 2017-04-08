@@ -1,11 +1,9 @@
-/* global L, mapboxgl */
+/* global L */
 
 var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
 var reqData = require('./lib/ags-opendata-request')
 var parallel = require('run-parallel')
-var VectorTileWorkerSource = require('mapbox-gl/src/source/vector_tile_worker_source')
-var loadVectorData = require('./lib/load-vector-data-leveldb')
 
 //var L = require('leaflet')
 //require('leaflet.vectorgrid').VectorGrid
@@ -13,20 +11,33 @@ require('./lib/Leaflet.VectorGrid.Leveldb')
 require('leaflet-easybutton')
 
 var db = level('vt')
-mapboxgl.accessToken = 'pk.eyJ1IjoibnBlaWhsIiwiYSI6InVmU21qeVUifQ.jwa9V6XsmccKsEHKh5QfmQ'
 var layer
+var landStyle = {
+  fill: true,
+  weight: 1.2,
+  fillColor: '#e1e1e1',
+  color: '#343434',
+  fillOpacity: 0.2,
+  opacity: 0.4
+}
 
 var vectorTileOptions = {
   rendererFactory: L.canvas.tile,
-  attribution: 'San Juan County GIS',
+  attribution: 'Natural Earth',
   vectorTileLayerStyles: {
-    shoreline: {
-      fill: true,
-      weight: 1.2,
-      fillColor: '#e1e1e1',
-      color: '#343434',
-      fillOpacity: 0.2,
-      opacity: 0.4
+    land110: function (prop, zoom) {
+      if (zoom <= 3) {
+        return landStyle
+      } else {
+        return []
+      }
+    },
+    land50: function (prop, zoom) {
+      if (zoom > 3 && zoom <= 5) {
+        return landStyle
+      } else {
+        return []
+      }
     },
     roads: {
       weight: 1,
@@ -54,24 +65,14 @@ var vectorTileOptions = {
 }
 
 var sources = {
-  shoreline: 'http://data.sjcgis.org/datasets/1f8c6537e46d4c6aa6bd20ff466fb982_0.geojson?where=OBJECTID%20%3E%3D%20262',
-  roads: 'http://data.sjcgis.org/datasets/167317f36825482abeae53637ad7a7f4_3.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838177.03790262,"ymin":6156211.922408805,"xmax":-13544658.849287685,"ymax":6247936.356350972,"spatialReference":{"wkid":102100}}',
-  driveways: 'http://data.sjcgis.org/datasets/2348ee6eafd448a0844d7b7a9e080924_2.geojson?where=Island%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13838270.89849671,"ymin":6161485.503622763,"xmax":-13544752.709881775,"ymax":6253209.93756493,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
-  addresses: 'http://data.sjcgis.org/datasets/1669f3152e2c4f4c8dd4228e240a9b7e_0.geojson?where=ISLAND%20like%20\'%25San%20Juan%25\'&geometry={"xmin":-13837887.607226558,"ymin":6161510.400420933,"xmax":-13544369.418611623,"ymax":6253234.8343631,"spatialReference":{"wkid":102100}}'
+  land110: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson',
+  land50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson'
 }
 
 var leafletMap = L.map('leaflet-map', {
-  center: [48.532294, -123.083954],
-  zoom: 12,
-  maxZoom: 15
-})
-
-var mapboxMap = new mapboxgl.Map({
-  container: 'mapbox-map',
-  style: 'mapbox://styles/mapbox/streets-v9',
-  center: [-123.083954, 48.532294],
-  zoom: 11,
-  maxZoom: 15
+  center: [0, 0],
+  zoom: 1,
+  maxZoom: 5
 })
 
 db.open(function onOpen () {
@@ -128,8 +129,8 @@ function loadData (sources, cb) {
 
 function bakeTiles (data) {
   return VectorTileIndex(data, db, {
-    zMin: 10,
-    zMax: 15,
-    bbox: [-123.214417, 48.434668, -122.953491, 48.630186]
+    zMin: 0,
+    zMax: 5,
+    bbox: [-179, -89, 179, 89]
   })
 }
