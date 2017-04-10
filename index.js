@@ -21,6 +21,31 @@ var landStyle = {
   opacity: 0.4
 }
 
+var placeStyle = {
+  weight: 1,
+  fillColor: '#636363',
+  color: '#636363',
+  fillOpacity: 1,
+  opacity: 1,
+  radius: 1.2
+}
+
+var boundaryStyle = {
+  weight: 1,
+  fillColor: '#676767',
+  color: '#676767',
+  fillOpacity: 0.2,
+  opacity: 0.4
+}
+
+var stateBoundaryStyle = {
+  weight: 0.4,
+  fillColor: '#676767',
+  color: '#676767',
+  fillOpacity: 0.2,
+  opacity: 0.4
+}
+
 var vectorTileOptions = {
   rendererFactory: L.canvas.tile,
   attribution: 'Natural Earth',
@@ -33,8 +58,43 @@ var vectorTileOptions = {
       }
     },
     land50: function (prop, zoom) {
-      if (zoom > 3 && zoom <= 5) {
+      if (zoom > 3 && zoom <= 8) {
         return landStyle
+      } else {
+        return []
+      }
+    },
+    popPlaces110: function (prop, zoom) {
+      if (zoom <= 3) {
+        return placeStyle
+      } else {
+        return []
+      }
+    },
+    popPlaces50: function (prop, zoom) {
+      if (zoom > 3 && zoom <= 8) {
+        return placeStyle
+      } else {
+        return []
+      }
+    },
+    boundary110: function (prop, zoom) {
+      if (zoom <= 3) {
+        return boundaryStyle
+      } else {
+        return []
+      }
+    },
+    boundary50: function (prop, zoom) {
+      if (zoom > 3 && zoom <= 5) {
+        return boundaryStyle
+      } else {
+        return []
+      }
+    },
+    statesProvinces50: function (prop, zoom) {
+      if (zoom > 3 && zoom <= 5) {
+        return stateBoundaryStyle
       } else {
         return []
       }
@@ -66,7 +126,12 @@ var vectorTileOptions = {
 
 var sources = {
   land110: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson',
-  land50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson'
+  land50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson',
+  popPlaces110: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_populated_places_simple.geojson',
+  popPlaces50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_populated_places_simple.geojson',
+  boundary110: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_boundary_lines_land.geojson',
+  boundary50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_boundary_lines_land.geojson',
+  statesProvinces50: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_1_states_provinces_lines.geojson'
 }
 
 var leafletMap = L.map('leaflet-map', {
