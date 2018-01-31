@@ -2,11 +2,11 @@
 
 var VectorTileIndex = require('./lib/VectorTileIndex.js')
 var level = require('level-js')
-var reqData = require('./lib/ags-opendata-request')
+var request = require('xhr-request')
 var parallel = require('run-parallel')
 
-//var L = require('leaflet')
-//require('leaflet.vectorgrid').VectorGrid
+// var L = require('leaflet')
+// require('leaflet.vectorgrid').VectorGrid
 require('./lib/Leaflet.VectorGrid.Leveldb')
 require('leaflet-easybutton')
 
@@ -146,47 +146,59 @@ db.open(function onOpen () {
 })
 
 L.easyButton({
-  states: [{
-    stateName: 'ready',
-    icon: '<span class="icon">&check;</span>',
-    title: 'Click to refresh the cache',
-    onClick: function (control) {
-      control.state('loading')
-      loadData(sources, function (err, data) {
-        if (err) throw err
-        // TODO this code smells
-        var layers = data.reduce(function (result, item) {
-          result[item['name']] = item['data']
-          return result
-        }, {})
-        var vti = bakeTiles(layers)
-        vti.ready(function () {
-          console.log('ready')
-          control.state('ready')
-          layer.redraw()
+  states: [
+    {
+      stateName: 'ready',
+      icon: '<span class="icon">&check;</span>',
+      title: 'Click to refresh the cache',
+      onClick: function (control) {
+        control.state('loading')
+        getData(sources, function (err, data) {
+          if (err) throw err
+          // TODO this code smells
+          var layers = data.reduce(function (result, item) {
+            result[item['name']] = item['data']
+            return result
+          }, {})
+          var vti = bakeTiles(layers)
+          vti.ready(function () {
+            console.log('ready')
+            control.state('ready')
+            layer.redraw()
+          })
         })
-      })
+      }
+    },
+    {
+      stateName: 'loading',
+      icon: '<span class="icon">&curren;</span>',
+      title: 'Refreshing the cache...',
+      onClick: function (control) {
+        control.state('ready')
+      }
     }
-  }, {
-    stateName: 'loading',
-    icon: '<span class="icon">&curren;</span>',
-    title: 'Refreshing the cache...',
-    onClick: function (control) {
-      control.state('ready')
-    }
-  }]
+  ]
 }).addTo(leafletMap)
 
-function loadData (sources, cb) {
+function getData (sources, cb) {
   var fns = Object.keys(sources).map(function (source) {
     return function (cb) {
-      reqData({ url: sources[source] }, function (err, data) {
-        if (err) cb(err)
-        cb(null, {
-          name: source,
-          data: data
-        })
-      })
+      request(
+        sources[source],
+        {
+          json: true
+        },
+        function (err, data, res) {
+          if (err) cb(err)
+          if (res.statusCode === 404) {
+            cb(new Error(`URL ${sources[source]} returned 404 Not Found`))
+          }
+          cb(null, {
+            name: source,
+            data: data
+          })
+        }
+      )
     }
   })
   parallel(fns, cb)
